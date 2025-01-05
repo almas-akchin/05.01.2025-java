@@ -1,0 +1,46 @@
+class Solution {
+    public String shiftingLetters(String s, int[][] shifts) {
+        int n = s.length();
+        int[] shiftArray = new int[n + 1];
+
+        // Apply all shifts to the shiftArray
+        for (int[] shift : shifts) {
+            int start = shift[0];
+            int end = shift[1];
+            int direction = shift[2];
+
+            // Forward shift adds 1, backward shift subtracts 1
+            int delta = direction == 1 ? 1 : -1;
+            shiftArray[start] += delta;
+            shiftArray[end + 1] -= delta;
+        }
+
+        // Calculate the prefix sum to get the net shift at each index
+        int netShift = 0;
+        char[] result = s.toCharArray();
+
+        for (int i = 0; i < n; i++) {
+            netShift += shiftArray[i];
+
+            // Normalize the shift value to avoid overflow/underflow
+            int effectiveShift = (netShift % 26 + 26) % 26;
+            result[i] = (char) ((result[i] - 'a' + effectiveShift) % 26 + 'a');
+        }
+
+        return new String(result);
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+
+        // Example 1
+        String s1 = "abc";
+        int[][] shifts1 = {{0, 1, 0}, {1, 2, 1}, {0, 2, 1}};
+        System.out.println(solution.shiftingLetters(s1, shifts1)); // Output: "ace"
+
+        // Example 2
+        String s2 = "dztz";
+        int[][] shifts2 = {{0, 0, 0}, {1, 1, 1}};
+        System.out.println(solution.shiftingLetters(s2, shifts2)); // Output: "catz"
+    }
+}
